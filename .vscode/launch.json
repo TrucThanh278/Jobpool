@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-JobPoolApplication<JobPool>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ntt.JobPool.JobPoolApplication",
+            "projectName": "JobPool",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
