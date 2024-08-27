@@ -1,6 +1,5 @@
 package com.ntt.JobPool.service;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;

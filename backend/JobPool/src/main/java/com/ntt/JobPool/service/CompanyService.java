@@ -1,13 +1,16 @@
 package com.ntt.JobPool.service;
 
-import java.lang.StackWalker.Option;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ntt.JobPool.domain.Company;
+import com.ntt.JobPool.domain.dto.Meta;
+import com.ntt.JobPool.domain.dto.ResultPaginationDTO;
 import com.ntt.JobPool.repository.CompanyRepository;
 
 @Service
@@ -19,8 +22,17 @@ public class CompanyService {
         return this.companyRepository.save(company);
     }
 
-    public List<Company> getAllCompanies() {
-        return this.companyRepository.findAll();
+    public ResultPaginationDTO getAllCompanies(Pageable page) {
+        Page<Company> rs = this.companyRepository.findAll(page);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        Meta meta = new Meta();
+        meta.setPage(rs.getNumber() + 1);
+        meta.setPageSize(rs.getSize());
+        meta.setPages(rs.getTotalPages());
+        meta.setTotal(rs.getTotalElements());
+        result.setMeta(meta);
+        result.setResult(rs.getContent());
+        return result;
     }
 
     public Company updateCompany(Company company) {
