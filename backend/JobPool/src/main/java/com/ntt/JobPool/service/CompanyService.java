@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.ntt.JobPool.domain.Company;
@@ -22,8 +23,8 @@ public class CompanyService {
         return this.companyRepository.save(company);
     }
 
-    public ResultPaginationDTO getAllCompanies(Pageable page) {
-        Page<Company> rs = this.companyRepository.findAll(page);
+    public ResultPaginationDTO getAllCompanies(Specification spec, Pageable page) {
+        Page<Company> rs = this.companyRepository.findAll(spec, page);
         ResultPaginationDTO result = new ResultPaginationDTO();
         Meta meta = new Meta();
         meta.setPage(rs.getNumber() + 1);

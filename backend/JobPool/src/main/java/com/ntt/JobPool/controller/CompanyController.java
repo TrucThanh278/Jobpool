@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ntt.JobPool.domain.Company;
 import com.ntt.JobPool.domain.dto.ResultPaginationDTO;
 import com.ntt.JobPool.service.CompanyService;
+import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 
@@ -38,16 +40,8 @@ public class CompanyController {
     }
 
     @GetMapping("/companies")
-    public ResponseEntity<ResultPaginationDTO> getAllCompanies(@RequestParam("current") Optional<String> currentOption,
-            @RequestParam("pageSize") Optional<String> pageSizeOption) {
-        String sCurrent = currentOption.isPresent() ? currentOption.get() : "";
-        String sPageSize = pageSizeOption.isPresent() ? pageSizeOption.get() : "";
-
-        int current = Integer.parseInt(sCurrent);
-        int pageSize = Integer.parseInt(sPageSize);
-
-        Pageable page = PageRequest.of(current, pageSize);
-        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.getAllCompanies(page));
+    public ResponseEntity<ResultPaginationDTO> getAllCompanies(@Filter Specification spec, Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.getAllCompanies(spec, pageable));
     }
 
     @PutMapping("/companies")
