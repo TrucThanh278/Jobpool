@@ -1,5 +1,6 @@
 package com.ntt.JobPool.controller;
 
+import com.ntt.JobPool.utils.annotations.ApiMessage;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ntt.JobPool.domain.User;
@@ -43,6 +44,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
+    @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getUsers(
             @Filter Specification spec, Pageable pageable) {
         ResultPaginationDTO users = this.userService.getAllUsers(spec, pageable);

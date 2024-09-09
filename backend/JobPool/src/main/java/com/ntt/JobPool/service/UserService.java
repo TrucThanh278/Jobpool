@@ -48,8 +48,15 @@ public class UserService {
         Page<User> rs = this.userRepository.findAll(spec, pageable);
         ResultPaginationDTO result = new ResultPaginationDTO();
         Meta meta = new Meta();
-        meta.setPage(rs.getNumber() + 1);
-        meta.setPageSize(rs.getSize());
+
+//        Query từ dưới database
+//        meta.setPage(rs.getNumber() + 1);
+//        meta.setPageSize(rs.getSize());
+
+//        Lấy từ front-end
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setTotal(meta.getPageSize());
+
         meta.setPages(rs.getTotalPages());
         meta.setTotal(rs.getTotalElements());
         result.setMeta(meta);
