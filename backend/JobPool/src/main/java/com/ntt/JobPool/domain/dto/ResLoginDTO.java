@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class RestLoginDTO {
+public class ResLoginDTO {
     private String access_token;
 }

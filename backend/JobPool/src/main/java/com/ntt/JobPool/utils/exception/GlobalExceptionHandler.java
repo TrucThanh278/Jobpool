@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.ntt.JobPool.domain.RestResponse;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = { UsernameNotFoundException.class, BadCredentialsException.class })
+    @ExceptionHandler(value = { UsernameNotFoundException.class, BadCredentialsException.class, IdInvalidException.class })
     public ResponseEntity<RestResponse<Object>> handleIdInvalidException(Exception ex) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
@@ -40,6 +41,16 @@ public class GlobalExceptionHandler {
         List<String> errors = fieldErrors.stream().map(f -> f.getDefaultMessage()).collect(Collectors.toList());
         res.setMessage(errors.size() > 1 ? errors : errors.get(0));
 
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    public ResponseEntity<RestResponse<Object>> handleNotFoundException(Exception ex){
+        RestResponse<Object> res = new RestResponse<>();
+
+        res.setStatusCode(HttpStatus.NOT_FOUND.value());
+        res.setError(ex.getMessage());
+        res.setMessage("404 Not Found");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 

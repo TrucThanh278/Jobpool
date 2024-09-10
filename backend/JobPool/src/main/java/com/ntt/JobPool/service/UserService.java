@@ -1,7 +1,9 @@
 package com.ntt.JobPool.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.ntt.JobPool.domain.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.ntt.JobPool.domain.User;
-import com.ntt.JobPool.domain.dto.Meta;
-import com.ntt.JobPool.domain.dto.ResultPaginationDTO;
 import com.ntt.JobPool.repository.UserRepository;
 
 @Service
@@ -31,18 +31,7 @@ public class UserService {
         return this.userRepository.findUserByEmail(userName);
     }
 
-    // public ResultPaginationDTO getAllUsers(Pageable pageable) {
-    // Page<User> rs = this.userRepository.findAll(pageable);
-    // ResultPaginationDTO result = new ResultPaginationDTO();
-    // Meta meta = new Meta();
-    // meta.setPage(rs.getNumber() + 1);
-    // meta.setPageSize(rs.getSize());
-    // meta.setPages(rs.getTotalPages());
-    // meta.setTotal(rs.getTotalElements());
-    // result.setMeta(meta);
-    // result.setResult(rs.getContent());
-    // return result;
-    // }
+    public Boolean isEmailExist(String email) {return this.userRepository.existsByEmail(email); }
 
     public ResultPaginationDTO getAllUsers(Specification<User> spec, Pageable pageable) {
         Page<User> rs = this.userRepository.findAll(spec, pageable);
@@ -60,11 +49,70 @@ public class UserService {
         meta.setPages(rs.getTotalPages());
         meta.setTotal(rs.getTotalElements());
         result.setMeta(meta);
+
+        List<ResUserDTO> listUser = rs.getContent()
+                .stream()
+                .map(item -> new ResUserDTO(
+                        item.getId(),
+                        item.getName(),
+                        item.getEmail(),
+                        item.getGender(),
+                        item.getAddress(),
+                        item.getAge(),
+                        item.getCreateAt(),
+                        item.getUpdateAt()
+                )).collect(Collectors.toList());
+
         result.setResult(rs.getContent());
+
         return result;
     }
 
-    public User updateUser(@RequestBody User user) {
+    public ResCreateUserDTO convertToResCreateUserDTO(User user){
+        ResCreateUserDTO u = new ResCreateUserDTO();
+        u.setId(user.getId());
+        u.setAge(user.getAge());
+        u.setName(user.getName());
+        u.setEmail(user.getEmail());
+        u.setGender(user.getGender());
+        u.setAddress(user.getAddress());
+        u.setCreateAt(user.getCreateAt());
+        return u;
+    }
+
+    public ResUserDTO convertToResUserDTO(User user){
+        ResUserDTO u = new ResUserDTO();
+        u.setId(user.getId());
+        u.setAge(user.getAge());
+        u.setName(user.getName());
+        u.setEmail(user.getEmail());
+        u.setGender(user.getGender());
+        u.setAddress(user.getAddress());
+        u.setCreateAt(user.getCreateAt());
+        u.setUpdateAt(user.getUpdateAt());
+        return u;
+    }
+
+    public ResUpdateUserDTO convertToRestResUpdateUserDTO(User user){
+        ResUpdateUserDTO u = new ResUpdateUserDTO();
+        u.setId(user.getId());
+        u.setName(user.getName());
+        u.setAge(user.getAge());
+        u.setGender(user.getGender());
+        u.setUpdateAt(user.getUpdateAt());
+        return u;
+    }
+
+    public User updateUser(User user) {
+        User u = this.getUserById(user.getId());
+
+        if (u != null){
+            u.setAddress(user.getAddress());
+            u.setGender(user.getGender());
+            u.setName(user.getName());
+            u.setName(user.getName());
+        }
+
         return this.userRepository.save(user);
     }
 

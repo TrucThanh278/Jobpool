@@ -8,15 +8,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ntt.JobPool.domain.dto.LoginDTO;
-import com.ntt.JobPool.domain.dto.RestLoginDTO;
+import com.ntt.JobPool.domain.dto.ResLoginDTO;
 import com.ntt.JobPool.utils.SecurityUtil;
 
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("/api/v1")
 public class AuthController {
 
     @Autowired
@@ -26,7 +28,7 @@ public class AuthController {
     private SecurityUtil securityUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<RestLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) throws Exception {
+    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) throws Exception {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
@@ -36,7 +38,7 @@ public class AuthController {
         // create token
         String access_token = this.securityUtil.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        RestLoginDTO res = new RestLoginDTO();
+        ResLoginDTO res = new ResLoginDTO();
         res.setAccess_token(access_token);
 
         return ResponseEntity.ok().body(res);
