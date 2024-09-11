@@ -14,43 +14,50 @@ import java.time.Instant;
 @Getter
 @Setter
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private String name;
 
-    @NotBlank(message = "Email không được để trống !")
-    private String email;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
+  private String name;
 
-    @NotBlank(message = "Mật khẩu không được để trống !")
-    private String password;
+  @NotBlank(message = "Email không được để trống !")
+  private String email;
 
-    private int age;
+  @NotBlank(message = "Mật khẩu không được để trống !")
+  private String password;
 
-    @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-    private String address;
-    private String refreshToken;
-    private Instant createAt;
-    private Instant updateAt;
-    private String createBy;
-    private String updateBy;
+  private int age;
 
-    @Override
-    public String toString() {
-        return "User [id=" + id + ", name=" + name + ", email=" + email + "]";
-    }
+  @Enumerated(EnumType.STRING)
+  private GenderEnum gender;
+  private String address;
+
+  @Column(columnDefinition = "MEDIUMTEXT")
+  private String refreshToken;
+  private Instant createAt;
+  private Instant updateAt;
+  private String createBy;
+  private String updateBy;
+
+  @Override
+  public String toString() {
+    return "User [id=" + id + ", name=" + name + ", email=" + email + "]";
+  }
 
 
-    @PrePersist
-    public void handleBeforeCreate(){
-        this.createBy = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
-        this.createAt = Instant.now();
-    }
+  @PrePersist
+  public void handleBeforeCreate() {
+    this.createBy =
+        SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
+            : "";
+    this.createAt = Instant.now();
+  }
 
-    @PreUpdate
-    public void handleBeforeUpdate(){
-        this.createBy = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
-        this.createAt = Instant.now();
-    }
+  @PreUpdate
+  public void handleBeforeUpdate() {
+    this.createBy =
+        SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
+            : "";
+    this.createAt = Instant.now();
+  }
 }

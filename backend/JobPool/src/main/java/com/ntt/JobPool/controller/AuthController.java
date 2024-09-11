@@ -1,6 +1,11 @@
 package com.ntt.JobPool.controller;
 
+import com.ntt.JobPool.domain.User;
+import com.ntt.JobPool.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,26 +26,55 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
+  @Autowired
+  private AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    @Autowired
-    private SecurityUtil securityUtil;
+  @Autowired
+  private SecurityUtil securityUtil;
 
-    @PostMapping("/login")
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) throws Exception {
-        // Nạp input gồm username/password vào Security
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginDTO.getUsername(), loginDTO.getPassword());
-        // xác thực người dùng => cần viết hàm loadUserByUsername
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+  @Autowired
+  private UserService userService;
 
-        // create token
-        String access_token = this.securityUtil.createToken(authentication);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        ResLoginDTO res = new ResLoginDTO();
-        res.setAccess_token(access_token);
+  @Value("${trucnguyen.jwt.refresh-token-validity-in-seconds}")
+  private long refreshTokenExpiration;
 
-        return ResponseEntity.ok().body(res);
+  @PostMapping("/login")
+  public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) throws Exception {
+    // Nạp input gồm username/password vào Security
+    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+        loginDTO.getUsername(), loginDTO.getPassword());
+    // xác thực người dùng => cần viết hàm loadUserByUsername
+    Authentication authentication = authenticationManagerBuilder.getObject()
+        .authenticate(authenticationToken);
+
+    // create token
+    String access_token = this.securityUtil.createAccessToken(authentication);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    ResLoginDTO res = new ResLoginDTO();
+    //Lay user hien tai dang dang nhap de gan cho user trong response
+    User currentUser = this.userService.getUserByUserName(loginDTO.getUsername());
+    if (currentUser != null) {
+      ResLoginDTO.UserLogin u = new ResLoginDTO.UserLogin(
+          currentUser.getId(), currentUser.getEmail(), currentUser.getName());
+      res.setUser(u);
     }
+
+    res.setAccessToken(access_token);
+
+    String refresh_token = this.securityUtil.createRefreshToken(loginDTO.getUsername(), res);
+
+//    update user refresh token
+    this.userService.updateUserToken(refresh_token, loginDTO.getUsername());
+
+//    set cookies
+    ResponseCookie resCookies = ResponseCookie.from("refresh_token", refresh_token)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(refreshTokenExpiration)
+        .build();
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, resCookies.toString()).body(res);
+  }
 }

@@ -19,7 +19,7 @@ public class UserDetailsCustom implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = this.userService.getUserUserName(username);
+        User user = this.userService.getUserByUserName(username);
         if (user == null) {
             throw new UsernameNotFoundException("Username/password khong hop le");
         }
