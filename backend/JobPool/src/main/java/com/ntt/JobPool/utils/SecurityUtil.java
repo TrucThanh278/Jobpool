@@ -1,13 +1,18 @@
 package com.ntt.JobPool.utils;
 
+import com.nimbusds.jose.util.Base64;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.ntt.JobPool.domain.dto.LoginDTO;
 import com.ntt.JobPool.domain.dto.ResLoginDTO;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -19,42 +24,73 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class SecurityUtil {
-    public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-    @Autowired
-    private JwtEncoder jwtEncoder;
+  public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
-    @Value("${trucnguyen.jwt.base64-secret}")
-    private String jwtKey;
+  @Autowired
+  private JwtEncoder jwtEncoder;
 
-    @Value("${trucnguyen.jwt.access-token-validity-in-seconds}")
-    private long accessTokenExpiration;
+  @Value("${trucnguyen.jwt.base64-secret}")
+  private String jwtKey;
 
-    @Value("${trucnguyen.jwt.refresh-token-validity-in-seconds}")
-    private long refreshTokenExpiration;
+  @Value("${trucnguyen.jwt.access-token-validity-in-seconds}")
+  private long accessTokenExpiration;
 
-    public String createAccessToken(Authentication authentication) {
+  @Value("${trucnguyen.jwt.refresh-token-validity-in-seconds}")
+  private long refreshTokenExpiration;
 
-        Instant now = Instant.now();
-        Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
-        // @formatter:off
+  private SecretKey getSecretKey() {
+    byte[] keyBytes = Base64.from(jwtKey).decode();
+    return new SecretKeySpec(keyBytes, 0, keyBytes.length, JWT_ALGORITHM.getName());
+  }
+
+  // Check refresh token
+
+  public Jwt checkValidRefreshToken(String token) {
+    NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
+        getSecretKey()).macAlgorithm(JWT_ALGORITHM).build();
+    try {
+      return jwtDecoder.decode(token);
+    } catch (Exception e) {
+      System.out.println(">>> Refresh token error: " + e.getMessage());
+      throw e;
+    }
+  }
+
+  public String createAccessToken(String email, ResLoginDTO.UserLogin u) {
+
+    Instant now = Instant.now();
+    Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
+
+    // hardcode permission
+    List<String> listAuthority = new ArrayList<String>();
+
+    listAuthority.add("ROLE_USER_CREATE");
+    listAuthority.add("ROLE_USER_UPDATE");
+
+    // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
-                .subject(authentication.getName()) // Token nay dai dien cho doi tuong nao thi set doi tuong do
-                .claim("trucnguyen", authentication) //Claim la cac cap k-v luu tru thong tin ve doi tuong, quyen han, thoi gian het han,... no la 1 phan cua payload
+                .subject(email) // Token nay dai dien cho doi tuong nao thi set doi tuong do (unique)
+                .claim("user", u) //Claim la cac cap k-v luu tru thong tin thuoc ve doi tuong, quyen han, thoi gian het han,... no la 1 phan cua payload
+                .claim("permission", listAuthority)
                 .build();
+
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
 
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims))
                             .getTokenValue();
-    }
+  }
 
     public String createRefreshToken(String email, ResLoginDTO resLoginDTO){
 
@@ -78,6 +114,7 @@ public class SecurityUtil {
      *
      * @return the login of the current user.
      */
+
     public static Optional<String> getCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(extractPrincipal(securityContext.getAuthentication()));
