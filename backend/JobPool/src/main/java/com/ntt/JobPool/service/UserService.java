@@ -62,8 +62,8 @@ public class UserService {
             item.getGender(),
             item.getAddress(),
             item.getAge(),
-            item.getCreateAt(),
-            item.getUpdateAt()
+            item.getCreatedAt(),
+            item.getUpdatedAt()
         )).collect(Collectors.toList());
 
     result.setResult(rs.getContent());
@@ -79,7 +79,7 @@ public class UserService {
     u.setEmail(user.getEmail());
     u.setGender(user.getGender());
     u.setAddress(user.getAddress());
-    u.setCreateAt(user.getCreateAt());
+    u.setCreateAt(user.getCreatedAt());
     return u;
   }
 
@@ -91,8 +91,8 @@ public class UserService {
     u.setEmail(user.getEmail());
     u.setGender(user.getGender());
     u.setAddress(user.getAddress());
-    u.setCreateAt(user.getCreateAt());
-    u.setUpdateAt(user.getUpdateAt());
+    u.setCreateAt(user.getCreatedAt());
+    u.setUpdateAt(user.getUpdatedAt());
     return u;
   }
 
@@ -102,7 +102,7 @@ public class UserService {
     u.setName(user.getName());
     u.setAge(user.getAge());
     u.setGender(user.getGender());
-    u.setUpdateAt(user.getUpdateAt());
+    u.setUpdateAt(user.getUpdatedAt());
     return u;
   }
 

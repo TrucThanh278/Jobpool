@@ -34,10 +34,10 @@ public class User {
 
   @Column(columnDefinition = "MEDIUMTEXT")
   private String refreshToken;
-  private Instant createAt;
-  private Instant updateAt;
-  private String createBy;
-  private String updateBy;
+  private Instant createdAt;
+  private Instant updatedAt;
+  private String createdBy;
+  private String updatedBy;
 
   @Override
   public String toString() {
@@ -47,17 +47,17 @@ public class User {
 
   @PrePersist
   public void handleBeforeCreate() {
-    this.createBy =
+    this.createdBy =
         SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
             : "";
-    this.createAt = Instant.now();
+    this.createdAt = Instant.now();
   }
 
   @PreUpdate
   public void handleBeforeUpdate() {
-    this.createBy =
+    this.createdBy =
         SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
             : "";
-    this.createAt = Instant.now();
+    this.createdAt = Instant.now();
   }
 }

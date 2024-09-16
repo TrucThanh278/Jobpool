@@ -21,33 +21,34 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Company {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @NotBlank(message = "Name không được để trống!")
-    private String name;
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String description;
-    private String address;
-    private String logo;
-    private Instant createdDate;
-    private Instant updatedDate;
-    private String createdBy;
-    private String updatedBy;
 
-    @PrePersist
-    public void handleBeforeCreate() {
-        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-        this.createdDate = Instant.now();
-    }
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
+  @NotBlank(message = "Name không được để trống!")
+  private String name;
+  @Column(columnDefinition = "MEDIUMTEXT")
+  private String description;
+  private String address;
+  private String logo;
+  private Instant updatedAt;
+  private Instant createdAt;
+  private String createdBy;
+  private String updatedBy;
 
-    @PreUpdate
-    public void handleBeforeUpdate() {
-        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-        this.updatedDate = Instant.now();
-    }
+  @PrePersist
+  public void handleBeforeCreate() {
+    this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        ? SecurityUtil.getCurrentUserLogin().get()
+        : "";
+    this.createdAt = Instant.now();
+  }
+
+  @PreUpdate
+  public void handleBeforeUpdate() {
+    this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        ? SecurityUtil.getCurrentUserLogin().get()
+        : "";
+    this.updatedAt = Instant.now();
+  }
 }

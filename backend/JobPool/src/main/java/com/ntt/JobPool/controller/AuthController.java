@@ -1,6 +1,7 @@
 package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.domain.User;
+import com.ntt.JobPool.domain.dto.ResLoginDTO.UserGetAccount;
 import com.ntt.JobPool.service.UserService;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
@@ -89,20 +90,23 @@ public class AuthController {
 
   @GetMapping("/auth/account")
   @ApiMessage("Fetch account")
-  public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+  public ResponseEntity<ResLoginDTO.UserGetAccount> getAccount() {
     String email =
         SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
             : "";
 
     User currentUser = this.userService.getUserByUserName(email);
     ResLoginDTO.UserLogin u = new ResLoginDTO.UserLogin();
+    ResLoginDTO.UserGetAccount userGetAccount = new UserGetAccount();
+
     if (currentUser != null) {
       u.setId(currentUser.getId());
       u.setEmail(currentUser.getEmail());
       u.setName(currentUser.getName());
+      userGetAccount.setUser(u);
     }
 
-    return ResponseEntity.ok().body(u);
+    return ResponseEntity.ok().body(userGetAccount);
   }
 
   @GetMapping("/auth/refresh")
@@ -143,6 +147,23 @@ public class AuthController {
         .build();
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, resCookies.toString()).body(res);
+  }
+
+  @PostMapping("/auth/logout")
+  @ApiMessage("Logout user")
+  public ResponseEntity<Void> logout() throws IdInvalidException {
+    String email =
+        SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
+            : null;
+
+    if (email == null) {
+      throw new IdInvalidException("Access Token khong hop le");
+    }
+
+    this.userService.updateUserToken(null, email);
+
+    ResponseCookie refresh_token = ResponseCookie.from("refresh_token", null).maxAge(0).build();
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refresh_token.toString()).build();
   }
 
 }
