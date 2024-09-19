@@ -39,11 +39,15 @@ public class User {
   private String createdBy;
   private String updatedBy;
 
+  @ManyToOne
+  @JoinColumn(name = "company_id")
+  private Company company;
+
   @Override
   public String toString() {
     return "User [id=" + id + ", name=" + name + ", email=" + email + "]";
   }
-  
+
   @PrePersist
   public void handleBeforeCreate() {
     this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true

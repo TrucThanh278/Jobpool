@@ -1,5 +1,7 @@
 package com.ntt.JobPool.domain;
 
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import java.time.Instant;
 
 import com.ntt.JobPool.utils.SecurityUtil;
@@ -13,6 +15,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,6 +38,9 @@ public class Company {
   private Instant createdAt;
   private String createdBy;
   private String updatedBy;
+
+  @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+  private List<User> users;
 
   @PrePersist
   public void handleBeforeCreate() {
