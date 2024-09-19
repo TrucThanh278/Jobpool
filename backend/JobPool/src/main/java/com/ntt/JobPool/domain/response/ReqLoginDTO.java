@@ -1,4 +1,4 @@
-package com.ntt.JobPool.domain.dto;
+package com.ntt.JobPool.domain.response;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.ntt.JobPool.domain.dto.ResLoginDTO;
+import com.ntt.JobPool.domain.request.ResLoginDTO;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Autowired;

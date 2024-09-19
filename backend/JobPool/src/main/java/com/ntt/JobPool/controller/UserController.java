@@ -1,23 +1,19 @@
 package com.ntt.JobPool.controller;
 
-import com.ntt.JobPool.domain.dto.ResCreateUserDTO;
-import com.ntt.JobPool.domain.dto.ResUpdateUserDTO;
-import com.ntt.JobPool.domain.dto.ResUserDTO;
+import com.ntt.JobPool.domain.request.ResCreateUserDTO;
+import com.ntt.JobPool.domain.request.ResUpdateUserDTO;
+import com.ntt.JobPool.domain.request.ResUserDTO;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import com.ntt.JobPool.domain.User;
-import com.ntt.JobPool.domain.dto.ResultPaginationDTO;
+import com.ntt.JobPool.domain.request.ResultPaginationDTO;
 import com.ntt.JobPool.service.UserService;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;

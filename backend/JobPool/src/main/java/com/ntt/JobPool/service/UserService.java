@@ -1,15 +1,17 @@
 package com.ntt.JobPool.service;
 
+import com.ntt.JobPool.domain.request.ResCreateUserDTO;
+import com.ntt.JobPool.domain.request.ResUpdateUserDTO;
+import com.ntt.JobPool.domain.request.ResUserDTO;
+import com.ntt.JobPool.domain.request.ResultPaginationDTO;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.ntt.JobPool.domain.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.ntt.JobPool.domain.User;
 import com.ntt.JobPool.repository.UserRepository;
@@ -39,7 +41,7 @@ public class UserService {
   public ResultPaginationDTO getAllUsers(Specification<User> spec, Pageable pageable) {
     Page<User> rs = this.userRepository.findAll(spec, pageable);
     ResultPaginationDTO result = new ResultPaginationDTO();
-    Meta meta = new Meta();
+    ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
 
 //        Query từ dưới database
 //        meta.setPage(rs.getNumber() + 1);
