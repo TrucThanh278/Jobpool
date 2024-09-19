@@ -11,8 +11,6 @@ import com.ntt.JobPool.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
-  User save(User user);
-
   User findUserById(long id);
 
   User findUserByEmail(String email);

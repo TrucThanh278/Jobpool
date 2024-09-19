@@ -102,7 +102,8 @@ public class UserService {
     u.setName(user.getName());
     u.setAge(user.getAge());
     u.setGender(user.getGender());
-    u.setUpdateAt(user.getUpdatedAt());
+    u.setUpdatedAt(user.getUpdatedAt());
+    u.setCreatedAt(user.getCreatedAt());
     return u;
   }
 
@@ -116,7 +117,7 @@ public class UserService {
       u.setName(user.getName());
     }
 
-    return this.userRepository.save(user);
+    return this.userRepository.save(u);
   }
 
   public void deleteUser(long userId) {

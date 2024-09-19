@@ -43,21 +43,20 @@ public class User {
   public String toString() {
     return "User [id=" + id + ", name=" + name + ", email=" + email + "]";
   }
-
-
+  
   @PrePersist
   public void handleBeforeCreate() {
-    this.createdBy =
-        SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
-            : "";
+    this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        ? SecurityUtil.getCurrentUserLogin().get()
+        : "";
     this.createdAt = Instant.now();
   }
 
   @PreUpdate
   public void handleBeforeUpdate() {
-    this.createdBy =
-        SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
-            : "";
-    this.createdAt = Instant.now();
+    this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        ? SecurityUtil.getCurrentUserLogin().get()
+        : "";
+    this.updatedAt = Instant.now();
   }
 }
