@@ -1,4 +1,4 @@
-package com.ntt.JobPool.domain.request;
+package com.ntt.JobPool.domain.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ntt.JobPool.domain.User;

@@ -1,8 +1,8 @@
 package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.domain.User;
-import com.ntt.JobPool.domain.response.ReqLoginDTO;
-import com.ntt.JobPool.domain.request.ResLoginDTO.UserGetAccount;
+import com.ntt.JobPool.domain.request.ReqLoginDTO;
+import com.ntt.JobPool.domain.response.ResLoginDTO.UserGetAccount;
 import com.ntt.JobPool.service.UserService;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ntt.JobPool.domain.request.ResLoginDTO;
+import com.ntt.JobPool.domain.response.ResLoginDTO;
 import com.ntt.JobPool.utils.SecurityUtil;
 
 import jakarta.validation.Valid;

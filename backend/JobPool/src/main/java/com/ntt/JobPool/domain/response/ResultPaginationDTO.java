@@ -1,4 +1,4 @@
-package com.ntt.JobPool.domain.request;
+package com.ntt.JobPool.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;

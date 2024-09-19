@@ -1,14 +1,14 @@
 package com.ntt.JobPool.controller;
 
-import com.ntt.JobPool.domain.request.ResCreateUserDTO;
-import com.ntt.JobPool.domain.request.ResUpdateUserDTO;
-import com.ntt.JobPool.domain.request.ResUserDTO;
+import com.ntt.JobPool.domain.response.ResCreateUserDTO;
+import com.ntt.JobPool.domain.response.ResUpdateUserDTO;
+import com.ntt.JobPool.domain.response.ResUserDTO;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import com.ntt.JobPool.domain.User;
-import com.ntt.JobPool.domain.request.ResultPaginationDTO;
+import com.ntt.JobPool.domain.response.ResultPaginationDTO;
 import com.ntt.JobPool.service.UserService;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
@@ -61,7 +61,7 @@ public class UserController {
 
     String hashPassword = this.passwordEncoder.encode(user.getPassword());
     user.setPassword(hashPassword);
-    User createdUser = this.userService.saveUser(user);
+    User createdUser = this.userService.handleCreateUser(user);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(this.userService.convertToResCreateUserDTO(createdUser));
   }

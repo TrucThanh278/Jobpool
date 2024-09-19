@@ -1,5 +1,6 @@
 package com.ntt.JobPool.repository;
 
+import com.ntt.JobPool.domain.Company;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
   Boolean existsByEmail(String email);
 
   User findByRefreshTokenAndEmail(String refresh_token, String email);
+
+  List<User> findByCompany(Company company);
 }

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.ntt.JobPool.domain.Company;
-import com.ntt.JobPool.domain.request.ResultPaginationDTO;
+import com.ntt.JobPool.domain.response.ResultPaginationDTO;
 import com.ntt.JobPool.service.CompanyService;
 import com.turkraft.springfilter.boot.Filter;
 

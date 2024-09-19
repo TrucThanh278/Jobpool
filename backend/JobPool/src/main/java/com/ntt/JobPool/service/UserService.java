@@ -1,12 +1,16 @@
 package com.ntt.JobPool.service;
 
-import com.ntt.JobPool.domain.request.ResCreateUserDTO;
-import com.ntt.JobPool.domain.request.ResUpdateUserDTO;
-import com.ntt.JobPool.domain.request.ResUserDTO;
-import com.ntt.JobPool.domain.request.ResultPaginationDTO;
+import com.ntt.JobPool.domain.Company;
+import com.ntt.JobPool.domain.response.ResCreateUserDTO;
+import com.ntt.JobPool.domain.response.ResCreateUserDTO.CompanyUser;
+import com.ntt.JobPool.domain.response.ResUpdateUserDTO;
+import com.ntt.JobPool.domain.response.ResUserDTO;
+import com.ntt.JobPool.domain.response.ResultPaginationDTO;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +26,14 @@ public class UserService {
   @Autowired
   private UserRepository userRepository;
 
-  public User saveUser(User user) {
+  @Autowired
+  private CompanyService companyService;
+
+  public User handleCreateUser(User user) {
+    if (user.getCompany() != null) {
+      Optional<Company> c = this.companyService.findCompanyById(user.getCompany().getId());
+      user.setCompany(c.isPresent() ? c.get() : null);
+    }
     return this.userRepository.save(user);
   }
 
@@ -65,7 +76,11 @@ public class UserService {
             item.getAddress(),
             item.getAge(),
             item.getCreatedAt(),
-            item.getUpdatedAt()
+            item.getUpdatedAt(),
+            new ResUserDTO.CompanyUser(
+                item.getCompany() != null ? item.getCompany().getId() : 0,
+                item.getCompany() != null ? item.getCompany().getName() : null
+            )
         )).collect(Collectors.toList());
 
     result.setResult(rs.getContent());
@@ -75,6 +90,7 @@ public class UserService {
 
   public ResCreateUserDTO convertToResCreateUserDTO(User user) {
     ResCreateUserDTO u = new ResCreateUserDTO();
+    ResCreateUserDTO.CompanyUser c = new ResCreateUserDTO.CompanyUser();
     u.setId(user.getId());
     u.setAge(user.getAge());
     u.setName(user.getName());
@@ -82,11 +98,20 @@ public class UserService {
     u.setGender(user.getGender());
     u.setAddress(user.getAddress());
     u.setCreateAt(user.getCreatedAt());
+
+    if (user.getCompany() != null) {
+      c.setId(user.getCompany().getId());
+      c.setName(user.getCompany().getName());
+      u.setCompany(c);
+    }
+
     return u;
   }
 
   public ResUserDTO convertToResUserDTO(User user) {
     ResUserDTO u = new ResUserDTO();
+    ResUserDTO.CompanyUser c = new ResUserDTO.CompanyUser();
+
     u.setId(user.getId());
     u.setAge(user.getAge());
     u.setName(user.getName());
@@ -95,17 +120,32 @@ public class UserService {
     u.setAddress(user.getAddress());
     u.setCreateAt(user.getCreatedAt());
     u.setUpdateAt(user.getUpdatedAt());
+
+    if (user.getCompany() != null) {
+      c.setId(user.getCompany().getId());
+      c.setName(user.getCompany().getName());
+      u.setCompany(c);
+    }
+
     return u;
   }
 
   public ResUpdateUserDTO convertToRestResUpdateUserDTO(User user) {
     ResUpdateUserDTO u = new ResUpdateUserDTO();
+    ResUpdateUserDTO.CompanyUser c = new ResUpdateUserDTO.CompanyUser();
+
     u.setId(user.getId());
     u.setName(user.getName());
     u.setAge(user.getAge());
     u.setGender(user.getGender());
     u.setUpdatedAt(user.getUpdatedAt());
     u.setCreatedAt(user.getCreatedAt());
+
+    if (user.getCompany() != null) {
+      c.setId(user.getCompany().getId());
+      c.setName(user.getCompany().getName());
+      u.setCompany(c);
+    }
     return u;
   }
 
@@ -117,6 +157,11 @@ public class UserService {
       u.setGender(user.getGender());
       u.setName(user.getName());
       u.setName(user.getName());
+    }
+
+    if (user.getCompany() != null) {
+      Optional<Company> c = this.companyService.findCompanyById(user.getCompany().getId());
+      u.setCompany(c.isPresent() ? c.get() : null);
     }
 
     return this.userRepository.save(u);

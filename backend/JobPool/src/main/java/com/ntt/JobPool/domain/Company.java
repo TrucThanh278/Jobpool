@@ -1,5 +1,6 @@
 package com.ntt.JobPool.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import java.time.Instant;
@@ -40,6 +41,7 @@ public class Company {
   private String updatedBy;
 
   @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+  @JsonIgnore
   private List<User> users;
 
   @PrePersist
