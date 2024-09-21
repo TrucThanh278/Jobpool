@@ -1,4 +1,4 @@
-package com.ntt.JobPool.domain;
+package com.ntt.JobPool.domain.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +8,9 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class RestResponse<T> {
-    private int statusCode;
-    private String error;
-    private Object message;
-    private T data;
+
+  private int statusCode;
+  private String error;
+  private Object message;
+  private T data;
 }
