@@ -19,7 +19,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(value = {UsernameNotFoundException.class, BadCredentialsException.class,
+  @ExceptionHandler(value = {
+      UsernameNotFoundException.class,
+      BadCredentialsException.class,
       IdInvalidException.class})
   public ResponseEntity<RestResponse<Object>> handleIdInvalidException(Exception ex) {
     RestResponse<Object> res = new RestResponse<Object>();
@@ -53,6 +55,17 @@ public class GlobalExceptionHandler {
     res.setStatusCode(HttpStatus.NOT_FOUND.value());
     res.setError(ex.getMessage());
     res.setMessage("404 Not Found");
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+  }
+
+  @ExceptionHandler(value = {
+      StorageException.class})
+  public ResponseEntity<RestResponse<Object>> handleFileUploadException(Exception ex) {
+    RestResponse<Object> res = new RestResponse<Object>();
+    res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+    res.setError(ex.getMessage());
+    res.setMessage("Exception upload file...");
+
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
   }
 
