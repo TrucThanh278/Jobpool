@@ -1,9 +1,11 @@
 package com.ntt.JobPool.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ntt.JobPool.utils.SecurityUtil;
 import com.ntt.JobPool.utils.enums.GenderEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -42,6 +44,11 @@ public class User {
   @ManyToOne
   @JoinColumn(name = "company_id")
   private Company company;
+
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  @JsonIgnore
+  private List<Resume> resumes;
+
 
   @Override
   public String toString() {
