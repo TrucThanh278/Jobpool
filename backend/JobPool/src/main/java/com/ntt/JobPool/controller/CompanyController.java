@@ -1,6 +1,8 @@
 package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.utils.annotations.ApiMessage;
+import com.ntt.JobPool.utils.exception.IdInvalidException;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,11 +31,22 @@ public class CompanyController {
   }
 
   @GetMapping("/companies")
-  @ApiMessage("fetch all companies")
+  @ApiMessage("get all companies")
   public ResponseEntity<ResultPaginationDTO> getAllCompanies(@Filter Specification spec,
       Pageable pageable) {
     return ResponseEntity.status(HttpStatus.OK)
         .body(this.companyService.getAllCompanies(spec, pageable));
+  }
+
+  @GetMapping("/companies/{id}")
+  @ApiMessage("get companies by id")
+  public ResponseEntity<Company> getCompanyById(@PathVariable("id") long id)
+      throws IdInvalidException {
+    Optional<Company> c = this.companyService.findCompanyById(id);
+    if (c.isEmpty()) {
+      throw new IdInvalidException("Cong ty voi id = " + id + " khong ton tai !");
+    }
+    return ResponseEntity.ok().body(c.get());
   }
 
   @PutMapping("/companies")

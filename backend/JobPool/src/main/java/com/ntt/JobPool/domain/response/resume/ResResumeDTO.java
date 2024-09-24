@@ -15,6 +15,7 @@ public class ResResumeDTO {
   private long id;
   private String url;
   private String email;
+  private String Company;
 
   @Enumerated(EnumType.STRING)
   private ResumeStateEnum status;
