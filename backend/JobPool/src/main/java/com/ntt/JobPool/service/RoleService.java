@@ -33,7 +33,7 @@ public class RoleService {
     if (role.getPermissions() != null) {
       List<Long> listIdPermissions = role.getPermissions().stream().map(r -> r.getId()).collect(
           Collectors.toList());
-      List<Permission> listPermissionsDb = this.permissionRepository.findByInId(listIdPermissions);
+      List<Permission> listPermissionsDb = this.permissionRepository.findByIdIn(listIdPermissions);
       role.setPermissions(listPermissionsDb);
     }
 
@@ -56,7 +56,7 @@ public class RoleService {
           .stream().map(x -> x.getId())
           .collect(Collectors.toList());
 
-      List<Permission> dbPermissions = this.permissionRepository.findByInId(reqPermissions);
+      List<Permission> dbPermissions = this.permissionRepository.findByIdIn(reqPermissions);
       r.setPermissions(dbPermissions);
     }
 
