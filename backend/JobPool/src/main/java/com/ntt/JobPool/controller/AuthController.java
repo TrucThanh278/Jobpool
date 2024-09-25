@@ -63,22 +63,22 @@ public class AuthController {
     User currentUser = this.userService.getUserByUserName(reqLoginDTO.getUsername());
     if (currentUser != null) {
       ResLoginDTO.UserLogin u = new ResLoginDTO.UserLogin(
-          currentUser.getId(), currentUser.getEmail(), currentUser.getName());
+          currentUser.getId(), currentUser.getEmail(), currentUser.getName(),
+          currentUser.getRole());
       res.setUser(u);
     }
 
     // create token
-    String access_token = this.securityUtil.createAccessToken(authentication.getName(),
-        res.getUser());
+    String access_token = this.securityUtil.createAccessToken(authentication.getName(), res);
 
     res.setAccessToken(access_token);
 
     String refresh_token = this.securityUtil.createRefreshToken(reqLoginDTO.getUsername(), res);
 
-//    update user refresh token
+    //    update user refresh token
     this.userService.updateUserToken(refresh_token, reqLoginDTO.getUsername());
 
-//    set cookies
+    //    set cookies
     ResponseCookie resCookies = ResponseCookie.from("refresh_token", refresh_token)
         .httpOnly(true)
         .secure(true)
@@ -90,7 +90,7 @@ public class AuthController {
   }
 
   @GetMapping("/auth/account")
-  @ApiMessage("Fetch account")
+  @ApiMessage("Get account")
   public ResponseEntity<ResLoginDTO.UserGetAccount> getAccount() {
     String email =
         SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get()
@@ -104,6 +104,7 @@ public class AuthController {
       u.setId(currentUser.getId());
       u.setEmail(currentUser.getEmail());
       u.setName(currentUser.getName());
+      u.setRole(currentUser.getRole());
       userGetAccount.setUser(u);
     }
 
@@ -126,11 +127,11 @@ public class AuthController {
     ResLoginDTO res = new ResLoginDTO();
     //Lay user hien tai dang dang nhap de gan cho user trong response
     ResLoginDTO.UserLogin u = new ResLoginDTO.UserLogin(
-        currentUser.getId(), currentUser.getEmail(), currentUser.getName());
+        currentUser.getId(), currentUser.getEmail(), currentUser.getName(), currentUser.getRole());
     res.setUser(u);
 
     // create token
-    String access_token = this.securityUtil.createAccessToken(email, res.getUser());
+    String access_token = this.securityUtil.createAccessToken(email, res);
 
     res.setAccessToken(access_token);
 

@@ -1,6 +1,7 @@
 package com.ntt.JobPool.utils;
 
 import com.nimbusds.jose.util.Base64;
+import com.ntt.JobPool.domain.response.ResLoginDTO.UserInsideToken;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -61,7 +62,12 @@ public class SecurityUtil {
     }
   }
 
-  public String createAccessToken(String email, ResLoginDTO.UserLogin u) {
+  public String createAccessToken(String email, ResLoginDTO u) {
+
+    ResLoginDTO.UserInsideToken userInsideToken = new UserInsideToken();
+    userInsideToken.setId(u.getUser().getId());
+    userInsideToken.setName(u.getUser().getName());
+    userInsideToken.setEmail(u.getUser().getEmail());
 
     Instant now = Instant.now();
     Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
@@ -77,7 +83,7 @@ public class SecurityUtil {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(email) // Token nay dai dien cho doi tuong nao thi set doi tuong do (unique)
-                .claim("user", u) //Claim la cac cap k-v luu tru thong tin thuoc ve doi tuong, quyen han, thoi gian het han,... no la 1 phan cua payload
+                .claim("user", userInsideToken) //Claim la cac cap k-v luu tru thong tin thuoc ve doi tuong, quyen han, thoi gian het han,... no la 1 phan cua payload
                 .claim("permission", listAuthority)
                 .build();
 
@@ -87,7 +93,12 @@ public class SecurityUtil {
                             .getTokenValue();
   }
 
-    public String createRefreshToken(String email, ResLoginDTO resLoginDTO){
+    public String createRefreshToken(String email, ResLoginDTO u){
+
+      ResLoginDTO.UserInsideToken userInsideToken = new UserInsideToken();
+      userInsideToken.setId(u.getUser().getId());
+      userInsideToken.setName(u.getUser().getName());
+      userInsideToken.setEmail(u.getUser().getEmail());
 
         Instant now = Instant.now();
         Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
@@ -95,7 +106,7 @@ public class SecurityUtil {
                 .issuedAt(now)
                 .subject(email)
                 .expiresAt(validity)
-                .claim("user", resLoginDTO.getUser())
+                .claim("user", userInsideToken)
                 .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
 

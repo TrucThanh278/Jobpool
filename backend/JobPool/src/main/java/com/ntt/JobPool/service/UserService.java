@@ -3,17 +3,14 @@ package com.ntt.JobPool.service;
 import com.ntt.JobPool.domain.Company;
 import com.ntt.JobPool.domain.Role;
 import com.ntt.JobPool.domain.response.ResCreateUserDTO;
-import com.ntt.JobPool.domain.response.ResCreateUserDTO.CompanyUser;
 import com.ntt.JobPool.domain.response.ResUpdateUserDTO;
 import com.ntt.JobPool.domain.response.ResUserDTO;
 import com.ntt.JobPool.domain.response.ResUserDTO.RoleUser;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
-import com.ntt.JobPool.repository.RoleRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.swing.text.html.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
