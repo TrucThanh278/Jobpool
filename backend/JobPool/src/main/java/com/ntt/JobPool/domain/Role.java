@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -40,6 +41,10 @@ public class Role {
   private Instant updatedAt;
   private String createdBy;
   private String updatedBy;
+
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
+  @JsonIgnore
+  private List<User> users;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JsonIgnoreProperties(value = {"roles"})

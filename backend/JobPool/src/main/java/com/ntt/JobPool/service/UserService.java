@@ -1,11 +1,14 @@
 package com.ntt.JobPool.service;
 
 import com.ntt.JobPool.domain.Company;
+import com.ntt.JobPool.domain.Role;
 import com.ntt.JobPool.domain.response.ResCreateUserDTO;
 import com.ntt.JobPool.domain.response.ResCreateUserDTO.CompanyUser;
 import com.ntt.JobPool.domain.response.ResUpdateUserDTO;
 import com.ntt.JobPool.domain.response.ResUserDTO;
+import com.ntt.JobPool.domain.response.ResUserDTO.RoleUser;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
+import com.ntt.JobPool.repository.RoleRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,10 +32,18 @@ public class UserService {
   @Autowired
   private CompanyService companyService;
 
+  @Autowired
+  private RoleService roleService;
+
   public User handleCreateUser(User user) {
     if (user.getCompany() != null) {
       Optional<Company> c = this.companyService.findCompanyById(user.getCompany().getId());
       user.setCompany(c.isPresent() ? c.get() : null);
+    }
+
+    if (user.getRole() != null) {
+      Role r = this.roleService.getRoleById(user.getRole().getId());
+      user.setRole(r != null ? r : null);
     }
     return this.userRepository.save(user);
   }
@@ -66,24 +77,10 @@ public class UserService {
     meta.setTotal(rs.getTotalElements());
     result.setMeta(meta);
 
-    List<ResUserDTO> listUser = rs.getContent()
-        .stream()
-        .map(item -> new ResUserDTO(
-            item.getId(),
-            item.getName(),
-            item.getEmail(),
-            item.getGender(),
-            item.getAddress(),
-            item.getAge(),
-            item.getCreatedAt(),
-            item.getUpdatedAt(),
-            new ResUserDTO.CompanyUser(
-                item.getCompany() != null ? item.getCompany().getId() : 0,
-                item.getCompany() != null ? item.getCompany().getName() : null
-            )
-        )).collect(Collectors.toList());
+    List<ResUserDTO> listUsers = rs.getContent().stream().map(u -> this.convertToResUserDTO(u))
+        .collect(Collectors.toList());
 
-    result.setResult(rs.getContent());
+    result.setResult(listUsers);
 
     return result;
   }
@@ -111,7 +108,7 @@ public class UserService {
   public ResUserDTO convertToResUserDTO(User user) {
     ResUserDTO u = new ResUserDTO();
     ResUserDTO.CompanyUser c = new ResUserDTO.CompanyUser();
-
+    ResUserDTO.RoleUser r = new RoleUser();
     u.setId(user.getId());
     u.setAge(user.getAge());
     u.setName(user.getName());
@@ -125,6 +122,12 @@ public class UserService {
       c.setId(user.getCompany().getId());
       c.setName(user.getCompany().getName());
       u.setCompany(c);
+    }
+
+    if (user.getRole() != null) {
+      r.setId(user.getRole().getId());
+      r.setName(user.getRole().getName());
+      u.setRole(r);
     }
 
     return u;
@@ -162,6 +165,11 @@ public class UserService {
     if (user.getCompany() != null) {
       Optional<Company> c = this.companyService.findCompanyById(user.getCompany().getId());
       u.setCompany(c.isPresent() ? c.get() : null);
+    }
+
+    if (user.getRole() != null) {
+      Role r = this.roleService.getRoleById(user.getRole().getId());
+      u.setRole(r != null ? r : null);
     }
 
     return this.userRepository.save(u);
