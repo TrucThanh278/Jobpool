@@ -24,6 +24,16 @@ public class PermissionService {
     );
   }
 
+  public boolean isSameName(Permission p) {
+    Permission permissionDB = this.getPermissionById(p.getId());
+    if (permissionDB != null) {
+      if (permissionDB.getName().equals(p.getName())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public Permission save(Permission p) {
     return this.permissionRepository.save(p);
   }
@@ -74,7 +84,6 @@ public class PermissionService {
     Permission currentPermission = permissionOptional.get();
     currentPermission.getRoles().forEach(role -> role.getPermissions().remove(currentPermission));
 
-    // delete permission
     this.permissionRepository.delete(currentPermission);
   }
 }

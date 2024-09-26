@@ -2,6 +2,7 @@ package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.domain.User;
 import com.ntt.JobPool.domain.request.ReqLoginDTO;
+import com.ntt.JobPool.domain.response.ResCreateUserDTO;
 import com.ntt.JobPool.domain.response.ResLoginDTO.UserGetAccount;
 import com.ntt.JobPool.service.UserService;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
@@ -9,12 +10,14 @@ import com.ntt.JobPool.utils.exception.IdInvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +43,10 @@ public class AuthController {
 
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
 
   @Value("${trucnguyen.jwt.refresh-token-validity-in-seconds}")
   private long refreshTokenExpiration;
@@ -87,6 +94,22 @@ public class AuthController {
         .build();
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, resCookies.toString()).body(res);
+  }
+
+  @PostMapping("/auth/register")
+  @ApiMessage("Reister account")
+  public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody User u)
+      throws IdInvalidException {
+    boolean isEmailExist = this.userService.isEmailExist(u.getEmail());
+    if (isEmailExist) {
+      throw new IdInvalidException("Email " + u.getEmail() + " da duoc su dung !");
+    }
+
+    String hashPassword = this.passwordEncoder.encode(u.getPassword());
+    u.setPassword(hashPassword);
+    User newUser = this.userService.handleCreateUser(u);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(this.userService.convertToResCreateUserDTO(newUser));
   }
 
   @GetMapping("/auth/account")

@@ -13,6 +13,12 @@ import com.ntt.JobPool.domain.response.resume.ResUpdateResumeDTO;
 import com.ntt.JobPool.repository.JobRespository;
 import com.ntt.JobPool.repository.ResumeRepository;
 import com.ntt.JobPool.repository.UserRepository;
+import com.ntt.JobPool.utils.SecurityUtil;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecification;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.node.FilterNode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,6 +39,15 @@ public class ResumeService {
 
   @Autowired
   private JobRespository jobRespository;
+
+  @Autowired
+  FilterBuilder fb;
+
+  @Autowired
+  private FilterParser filterParser;
+
+  @Autowired
+  private FilterSpecificationConverter filterSpecificationConverter;
 
   public Optional<Resume> getResumeById(long id) {
     return this.resumeRepository.findById(id);
@@ -122,6 +137,33 @@ public class ResumeService {
             Collectors.toList());
 
     res.setResult(listResumes);
+
+    return res;
+  }
+
+  public ResultPaginationDTO getResumeByUser(Pageable pageable) {
+    //decode access token lay email nguoi dung hien tai
+    String email = SecurityUtil.getCurrentUserLogin().isPresent() ?
+        SecurityUtil.getCurrentUserLogin().get() : "";
+
+    FilterNode node = filterParser.parse("email='" + email + "'");
+    FilterSpecification<Resume> spec = filterSpecificationConverter.convert(node);
+    Page<Resume> pageResume = this.resumeRepository.findAll(spec, pageable);
+
+    ResultPaginationDTO res = new ResultPaginationDTO();
+    ResultPaginationDTO.Meta meta = new Meta();
+
+    meta.setPage(pageable.getPageNumber() + 1);
+    meta.setPageSize(pageable.getPageSize());
+    meta.setPages(pageResume.getTotalPages());
+    meta.setTotal(pageResume.getTotalElements());
+
+    res.setMeta(meta);
+    List<ResResumeDTO> listRes = pageResume.getContent().stream()
+        .map(r -> this.convertResumeToResResumeDTO(r)).collect(
+            Collectors.toList());
+
+    res.setResult(listRes);
 
     return res;
   }

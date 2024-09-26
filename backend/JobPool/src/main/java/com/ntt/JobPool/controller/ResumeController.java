@@ -1,17 +1,26 @@
 package com.ntt.JobPool.controller;
 
+import com.ntt.JobPool.domain.Company;
+import com.ntt.JobPool.domain.Job;
 import com.ntt.JobPool.domain.Resume;
+import com.ntt.JobPool.domain.User;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
 import com.ntt.JobPool.domain.response.resume.ResCreateResumeDTO;
 import com.ntt.JobPool.domain.response.resume.ResResumeDTO;
 import com.ntt.JobPool.domain.response.resume.ResUpdateResumeDTO;
 import com.ntt.JobPool.service.ResumeService;
+import com.ntt.JobPool.service.UserService;
+import com.ntt.JobPool.utils.SecurityUtil;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
 import jakarta.persistence.Id;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,6 +41,15 @@ public class ResumeController {
 
   @Autowired
   private ResumeService resumeService;
+
+  @Autowired
+  private FilterBuilder filterBuilder;
+
+  @Autowired
+  private FilterSpecificationConverter filterSpecificationConverter;
+
+  @Autowired
+  private UserService userService;
 
   @PostMapping("/resumes")
   @ApiMessage("Create a resume")
@@ -89,6 +107,34 @@ public class ResumeController {
   public ResponseEntity<ResultPaginationDTO> getAllResumes(
       @Filter Specification<Resume> spec,
       Pageable pageable) {
-    return ResponseEntity.ok().body(this.resumeService.getAllResumes(spec, pageable));
+    List<Long> arrJobIds = null;
+    String email =
+        SecurityUtil.getCurrentUserLogin().isPresent() == true ? SecurityUtil.getCurrentUserLogin()
+            .get() : "";
+
+    User currentUser = this.userService.getUserByUserName(email);
+    if (currentUser != null) {
+      Company c = currentUser.getCompany();
+      if (c != null) {
+        List<Job> companyJobs = c.getJobs();
+        if (companyJobs != null && companyJobs.size() > 0) {
+          arrJobIds = companyJobs.stream().map(i -> i.getId()).collect(Collectors.toList());
+        }
+      }
+    }
+
+    Specification<Resume> jobInSpec = filterSpecificationConverter.convert(
+        filterBuilder.field("job")
+            .in(filterBuilder.input(arrJobIds)).get());
+
+    Specification<Resume> finalSpec = jobInSpec.and(spec);
+
+    return ResponseEntity.ok().body(this.resumeService.getAllResumes(finalSpec, pageable));
+  }
+
+  @PostMapping("/resumes/by-user")
+  @ApiMessage("Get all resumes of current user")
+  public ResponseEntity<ResultPaginationDTO> getAllResumesOfCurrentUser(Pageable pageable) {
+    return ResponseEntity.ok().body(this.resumeService.getResumeByUser(pageable));
   }
 }
