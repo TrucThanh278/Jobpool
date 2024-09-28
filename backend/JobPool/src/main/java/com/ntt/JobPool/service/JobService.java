@@ -8,11 +8,10 @@ import com.ntt.JobPool.domain.response.job.ResUpdateJobDTO;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO.Meta;
 import com.ntt.JobPool.repository.CompanyRepository;
-import com.ntt.JobPool.repository.JobRespository;
+import com.ntt.JobPool.repository.JobRepository;
 import com.ntt.JobPool.repository.SkillRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class JobService {
 
   @Autowired
-  private JobRespository jobRespository;
+  private JobRepository jobRepository;
 
   @Autowired
   private SkillRepository skillRepository;
@@ -48,7 +47,7 @@ public class JobService {
       }
     }
 
-    Job currentJob = this.jobRespository.save(job);
+    Job currentJob = this.jobRepository.save(job);
 
     ResCreateJobDTO resJob = new ResCreateJobDTO();
     resJob.setId(currentJob.getId());
@@ -73,11 +72,11 @@ public class JobService {
   }
 
   public Optional<Job> getJobById(long id) {
-    return this.jobRespository.findById(id);
+    return this.jobRepository.findById(id);
   }
 
   public ResultPaginationDTO getAllJobs(Specification<Job> spec, Pageable pageable) {
-    Page<Job> pageJob = this.jobRespository.findAll(spec, pageable);
+    Page<Job> pageJob = this.jobRepository.findAll(spec, pageable);
     ResultPaginationDTO rs = new ResultPaginationDTO();
     ResultPaginationDTO.Meta meta = new Meta();
 
@@ -116,7 +115,7 @@ public class JobService {
     dbJob.setEndDate(newJob.getEndDate());
     dbJob.setActive(newJob.isActive());
 
-    Job currentJob = this.jobRespository.save(dbJob);
+    Job currentJob = this.jobRepository.save(dbJob);
 
     ResUpdateJobDTO res = new ResUpdateJobDTO();
     res.setId(currentJob.getId());
@@ -141,6 +140,6 @@ public class JobService {
   }
 
   public void deleteJob(long id) {
-    this.jobRespository.deleteById(id);
+    this.jobRepository.deleteById(id);
   }
 }

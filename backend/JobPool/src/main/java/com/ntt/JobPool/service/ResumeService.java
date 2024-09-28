@@ -10,7 +10,7 @@ import com.ntt.JobPool.domain.response.resume.ResResumeDTO;
 import com.ntt.JobPool.domain.response.resume.ResResumeDTO.JobResume;
 import com.ntt.JobPool.domain.response.resume.ResResumeDTO.UserResume;
 import com.ntt.JobPool.domain.response.resume.ResUpdateResumeDTO;
-import com.ntt.JobPool.repository.JobRespository;
+import com.ntt.JobPool.repository.JobRepository;
 import com.ntt.JobPool.repository.ResumeRepository;
 import com.ntt.JobPool.repository.UserRepository;
 import com.ntt.JobPool.utils.SecurityUtil;
@@ -38,7 +38,7 @@ public class ResumeService {
   private UserRepository userRepository;
 
   @Autowired
-  private JobRespository jobRespository;
+  private JobRepository jobRepository;
 
   @Autowired
   FilterBuilder fb;
@@ -67,7 +67,7 @@ public class ResumeService {
       return false;
     }
 
-    Optional<Job> j = this.jobRespository.findById(resume.getJob().getId());
+    Optional<Job> j = this.jobRepository.findById(resume.getJob().getId());
     if (j.isEmpty()) {
       return false;
     }

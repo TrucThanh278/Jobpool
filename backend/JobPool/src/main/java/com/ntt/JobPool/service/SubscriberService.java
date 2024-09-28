@@ -1,7 +1,10 @@
 package com.ntt.JobPool.service;
 
+import com.ntt.JobPool.domain.Job;
 import com.ntt.JobPool.domain.Skill;
 import com.ntt.JobPool.domain.Subscriber;
+import com.ntt.JobPool.domain.response.email.ResEmailJob;
+import com.ntt.JobPool.repository.JobRepository;
 import com.ntt.JobPool.repository.SkillRepository;
 import com.ntt.JobPool.repository.SubscriberRepository;
 import java.util.List;
@@ -18,6 +21,12 @@ public class SubscriberService {
 
   @Autowired
   private SkillRepository skillRepository;
+
+  @Autowired
+  private JobRepository jobRepository;
+
+  @Autowired
+  private EmailService emailService;
 
 
   public boolean isExistsByEmail(String email) {
@@ -57,5 +66,40 @@ public class SubscriberService {
       return subsOptional.get();
     }
     return null;
+  }
+
+  public ResEmailJob convertJobToSendEmail(Job job) {
+    ResEmailJob res = new ResEmailJob();
+    res.setName(job.getName());
+    res.setSalary(job.getSalary());
+    res.setCompany(new ResEmailJob.CompanyEmail(job.getCompany().getName()));
+    List<Skill> skills = job.getSkills();
+    List<ResEmailJob.SkillEmail> s = skills.stream()
+        .map(skill -> new ResEmailJob.SkillEmail(skill.getName()))
+        .collect(Collectors.toList());
+    res.setSkills(s);
+    return res;
+  }
+
+  public void sendSubscribersEmailJobs() {
+    List<Subscriber> listSubs = this.subscriberRepository.findAll();
+    if (listSubs != null && listSubs.size() > 0) {
+      for (Subscriber sub : listSubs) {
+        List<Skill> listSkills = sub.getSkills();
+        if (listSkills != null && listSkills.size() > 0) {
+          List<Job> listJobs = this.jobRepository.findBySkillsIn(listSkills);
+          if (listJobs != null && listJobs.size() > 0) {
+            List<ResEmailJob> arr = listJobs.stream().map(
+                job -> this.convertJobToSendEmail(job)).collect(Collectors.toList());
+            this.emailService.sendEmailFromTemplateSync(
+                sub.getEmail(),
+                "Cơ hội việc làm hot đang chờ đón bạn, khám phá ngay",
+                "job",
+                sub.getName(),
+                arr);
+          }
+        }
+      }
+    }
   }
 }
