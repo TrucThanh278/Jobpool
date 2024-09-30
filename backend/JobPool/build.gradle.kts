@@ -28,6 +28,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("com.turkraft.springfilter:jpa:3.1.7")
     implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
     runtimeOnly("com.mysql:mysql-connector-j")

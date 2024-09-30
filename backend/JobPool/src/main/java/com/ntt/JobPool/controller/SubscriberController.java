@@ -2,6 +2,7 @@ package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.domain.Subscriber;
 import com.ntt.JobPool.service.SubscriberService;
+import com.ntt.JobPool.utils.SecurityUtil;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
 import jakarta.validation.Valid;
@@ -46,4 +47,13 @@ public class SubscriberController {
     return ResponseEntity.ok().body(this.subscriberService.update(subsDB, subsRequest));
   }
 
+  @PostMapping("/subscribers/skills")
+  @ApiMessage("Get subscriber's skill")
+  public ResponseEntity<Subscriber> getSubscribersSkill() throws IdInvalidException {
+    String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        ? SecurityUtil.getCurrentUserLogin().get()
+        : "";
+
+    return ResponseEntity.ok().body(this.subscriberService.getByEmail(email));
+  }
 }

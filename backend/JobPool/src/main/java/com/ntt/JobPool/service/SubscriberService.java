@@ -102,4 +102,8 @@ public class SubscriberService {
       }
     }
   }
+
+  public Subscriber getByEmail(String email) {
+    return this.subscriberRepository.findByEmail(email);
+  }
 }

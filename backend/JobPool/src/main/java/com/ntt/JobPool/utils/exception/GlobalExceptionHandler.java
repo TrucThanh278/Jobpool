@@ -19,6 +19,15 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<RestResponse<Object>> handleAllException(Exception ex) {
+    RestResponse<Object> res = new RestResponse<Object>();
+    res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    res.setMessage(ex.getMessage());
+    res.setError("Internal Server Error");
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+  }
+
   @ExceptionHandler(value = {
       UsernameNotFoundException.class,
       BadCredentialsException.class,
@@ -26,8 +35,8 @@ public class GlobalExceptionHandler {
   public ResponseEntity<RestResponse<Object>> handleIdInvalidException(Exception ex) {
     RestResponse<Object> res = new RestResponse<Object>();
     res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-    res.setError(ex.getMessage());
-    res.setMessage("Exception occurred...");
+    res.setError("Exception occurred...");
+    res.setMessage(ex.getMessage());
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
   }
@@ -53,8 +62,8 @@ public class GlobalExceptionHandler {
     RestResponse<Object> res = new RestResponse<>();
 
     res.setStatusCode(HttpStatus.NOT_FOUND.value());
-    res.setError(ex.getMessage());
-    res.setMessage("404 Not Found");
+    res.setError("404 Not Found");
+    res.setMessage(ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
   }
 
@@ -63,8 +72,8 @@ public class GlobalExceptionHandler {
   public ResponseEntity<RestResponse<Object>> handleFileUploadException(Exception ex) {
     RestResponse<Object> res = new RestResponse<Object>();
     res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-    res.setError(ex.getMessage());
-    res.setMessage("Exception upload file...");
+    res.setError("Exception upload file...");
+    res.setMessage(ex.getMessage());
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
   }
@@ -74,8 +83,8 @@ public class GlobalExceptionHandler {
   public ResponseEntity<RestResponse<Object>> handlePermissionException(Exception ex) {
     RestResponse<Object> res = new RestResponse<Object>();
     res.setStatusCode(HttpStatus.FORBIDDEN.value());
-    res.setError(ex.getMessage());
-    res.setMessage("Forbidden");
+    res.setError("Forbidden");
+    res.setMessage(ex.getMessage());
 
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
   }
