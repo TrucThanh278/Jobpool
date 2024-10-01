@@ -1,6 +1,7 @@
 package com.ntt.JobPool.service;
 
 import com.ntt.JobPool.domain.Company;
+import com.ntt.JobPool.domain.Resume;
 import com.ntt.JobPool.domain.Role;
 import com.ntt.JobPool.domain.response.ResCreateUserDTO;
 import com.ntt.JobPool.domain.response.ResUpdateUserDTO;
@@ -173,6 +174,10 @@ public class UserService {
   }
 
   public void deleteUser(long userId) {
+    Optional<User> optionUser = this.userRepository.findUserById(userId);
+    User currentUser = optionUser.get();
+    currentUser.getResumes().forEach(resume -> resume.setUser(null));
+
     this.userRepository.deleteById(userId);
   }
 

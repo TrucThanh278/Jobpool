@@ -5,6 +5,7 @@ import com.ntt.JobPool.domain.response.ResUpdateUserDTO;
 import com.ntt.JobPool.domain.response.ResUserDTO;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import org.springframework.web.bind.annotation.*;
 
 import com.ntt.JobPool.domain.User;
