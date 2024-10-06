@@ -8,6 +8,7 @@ import com.ntt.JobPool.domain.response.ResUpdateUserDTO;
 import com.ntt.JobPool.domain.response.ResUserDTO;
 import com.ntt.JobPool.domain.response.ResUserDTO.RoleUser;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
+import com.ntt.JobPool.repository.ResumeRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +33,9 @@ public class UserService {
 
   @Autowired
   private RoleService roleService;
+
+  @Autowired
+  private ResumeRepository resumeRepository;
 
   public User handleCreateUser(User user) {
     if (user.getCompany() != null) {
@@ -176,7 +180,7 @@ public class UserService {
   public void deleteUser(long userId) {
     Optional<User> optionUser = this.userRepository.findUserById(userId);
     User currentUser = optionUser.get();
-    currentUser.getResumes().forEach(resume -> resume.setUser(null));
+    this.resumeRepository.deleteAll(currentUser.getResumes());
 
     this.userRepository.deleteById(userId);
   }

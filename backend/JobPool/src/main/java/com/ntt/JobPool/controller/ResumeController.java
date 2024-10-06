@@ -65,17 +65,17 @@ public class ResumeController {
 
   @PutMapping("/resumes")
   @ApiMessage("Update resume")
-  public ResponseEntity<ResUpdateResumeDTO> updateResume(@Valid @RequestBody Resume resume)
+  public ResponseEntity<ResUpdateResumeDTO> updateResume(@RequestBody Resume resume)
       throws IdInvalidException {
-    Optional<Resume> r = this.resumeService.getResumeById(resume.getId());
-
-    if (r.isEmpty()) {
-      throw new IdInvalidException("Resume khong ton tai !");
+    Optional<Resume> reqResumeOptional = this.resumeService.getResumeById(resume.getId());
+    if (reqResumeOptional.isEmpty()) {
+      throw new IdInvalidException("Resume với id = " + resume.getId() + " không tồn tại");
     }
 
-    Resume result = r.get();
-    result.setStatus(resume.getStatus());
-    return ResponseEntity.ok().body(this.resumeService.updateResume(resume));
+    Resume reqResume = reqResumeOptional.get();
+    reqResume.setStatus(resume.getStatus());
+
+    return ResponseEntity.ok().body(this.resumeService.updateResume(reqResume));
   }
 
   @DeleteMapping("/resumes/{id}")
