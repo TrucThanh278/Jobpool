@@ -4,7 +4,7 @@ import com.ntt.JobPool.domain.Job;
 import com.ntt.JobPool.domain.response.job.ResCreateJobDTO;
 import com.ntt.JobPool.domain.response.job.ResUpdateJobDTO;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
-import com.ntt.JobPool.service.JobService;
+import com.ntt.JobPool.service.impl.JobServiceImpl;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
@@ -28,25 +28,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class JobController {
 
   @Autowired
-  private JobService jobService;
+  private JobServiceImpl jobServiceImpl;
 
   @PostMapping("/jobs")
   @ApiMessage("Create a job")
   public ResponseEntity<ResCreateJobDTO> createJob(@Valid @RequestBody Job job) {
-    return ResponseEntity.ok().body(this.jobService.createJob(job));
+    return ResponseEntity.ok().body(this.jobServiceImpl.createJob(job));
   }
 
   @GetMapping("/jobs")
   @ApiMessage("Get job with pagination")
   public ResponseEntity<ResultPaginationDTO> getAllJobs(@Filter Specification<Job> spec,
       Pageable page) {
-    return ResponseEntity.ok().body(this.jobService.getAllJobs(spec, page));
+    return ResponseEntity.ok().body(this.jobServiceImpl.getAllJobs(spec, page));
   }
 
   @GetMapping("/jobs/{id}")
   @ApiMessage("Get a job by id")
   public ResponseEntity<Job> getJobById(@PathVariable("id") long id) throws IdInvalidException {
-    Optional<Job> job = this.jobService.getJobById(id);
+    Optional<Job> job = this.jobServiceImpl.getJobById(id);
     if (!job.isPresent()) {
       throw new IdInvalidException("Job not found");
     }
@@ -57,24 +57,24 @@ public class JobController {
   @ApiMessage("Update a job")
   public ResponseEntity<ResUpdateJobDTO> updateJob(@Valid @RequestBody Job job)
       throws IdInvalidException {
-    Optional<Job> currentJob = this.jobService.getJobById(job.getId());
+    Optional<Job> currentJob = this.jobServiceImpl.getJobById(job.getId());
 
     if (!currentJob.isPresent()) {
       throw new IdInvalidException("Job not found !");
     }
-    return ResponseEntity.ok().body(this.jobService.updateJob(job, currentJob.get()));
+    return ResponseEntity.ok().body(this.jobServiceImpl.updateJob(job, currentJob.get()));
   }
 
   @DeleteMapping("/jobs/{id}")
   @ApiMessage("Delete a job by id")
   public ResponseEntity<Void> deleteJob(@PathVariable("id") long id) throws IdInvalidException {
-    Optional<Job> currentJob = this.jobService.getJobById(id);
+    Optional<Job> currentJob = this.jobServiceImpl.getJobById(id);
 
     if (!currentJob.isPresent()) {
       throw new IdInvalidException("Job not found !");
     }
 
-    this.jobService.deleteJob(id);
+    this.jobServiceImpl.deleteJob(id);
 
     return ResponseEntity.ok().body(null);
   }

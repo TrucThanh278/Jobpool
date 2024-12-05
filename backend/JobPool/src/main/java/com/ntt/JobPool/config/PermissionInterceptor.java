@@ -3,9 +3,8 @@ package com.ntt.JobPool.config;
 import com.ntt.JobPool.domain.Permission;
 import com.ntt.JobPool.domain.Role;
 import com.ntt.JobPool.domain.User;
-import com.ntt.JobPool.service.UserService;
+import com.ntt.JobPool.service.impl.UserServiceImpl;
 import com.ntt.JobPool.utils.SecurityUtil;
-import com.ntt.JobPool.utils.exception.IdInvalidException;
 import com.ntt.JobPool.utils.exception.PermissionException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +17,7 @@ import org.springframework.web.servlet.HandlerMapping;
 public class PermissionInterceptor implements HandlerInterceptor {
 
   @Autowired
-  private UserService userService;
+  private UserServiceImpl userServiceImpl;
 
   @Override
   @Transactional
@@ -38,7 +37,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
         ? SecurityUtil.getCurrentUserLogin().get()
         : "";
     if (email != null && !email.isEmpty()) {
-      User user = this.userService.getUserByUserName(email);
+      User user = this.userServiceImpl.getUserByUserName(email);
       if (user != null) {
         Role role = user.getRole();
         if (role != null) {

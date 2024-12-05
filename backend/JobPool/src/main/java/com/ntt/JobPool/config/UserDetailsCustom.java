@@ -1,6 +1,6 @@
 package com.ntt.JobPool.config;
 
-import com.ntt.JobPool.service.UserService;
+import com.ntt.JobPool.service.impl.UserServiceImpl;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +16,11 @@ import com.ntt.JobPool.domain.User;
 public class UserDetailsCustom implements UserDetailsService {
 
   @Autowired
-  private UserService userService;
+  private UserServiceImpl userServiceImpl;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = this.userService.getUserByUserName(username);
+    User user = this.userServiceImpl.getUserByUserName(username);
     if (user == null) {
       throw new UsernameNotFoundException("Username/password khong hop le");
     }

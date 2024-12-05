@@ -2,7 +2,7 @@ package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.domain.Permission;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
-import com.ntt.JobPool.service.PermissionService;
+import com.ntt.JobPool.service.impl.PermissionServiceImpl;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
@@ -26,17 +26,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class PermissionController {
 
   @Autowired
-  private PermissionService permissionService;
+  private PermissionServiceImpl permissionServiceImpl;
 
   @PostMapping("/permissions")
   @ApiMessage("Create new permission")
   public ResponseEntity<Permission> createPermission(@Valid @RequestBody Permission permission)
       throws IdInvalidException {
-    if (this.permissionService.isPermissionExist(permission)) {
+    if (this.permissionServiceImpl.isPermissionExist(permission)) {
       throw new IdInvalidException("Permission nay da ton tai !");
     }
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(this.permissionService.save(permission));
+    return ResponseEntity.status(HttpStatus.CREATED).body(this.permissionServiceImpl.save(permission));
   }
 
   @PutMapping("/permissions")
@@ -44,17 +44,17 @@ public class PermissionController {
   public ResponseEntity<Permission> updatePermission(@Valid @RequestBody Permission p)
       throws IdInvalidException {
 
-    if (this.permissionService.getPermissionById(p.getId()) == null) {
+    if (this.permissionServiceImpl.getPermissionById(p.getId()) == null) {
       throw new IdInvalidException("Permission voi id = " + p.getId() + " khong ton tai !");
     }
 
-    if (this.permissionService.isPermissionExist(p)) {
-      if (this.permissionService.isSameName(p)) {
+    if (this.permissionServiceImpl.isPermissionExist(p)) {
+      if (this.permissionServiceImpl.isSameName(p)) {
         throw new IdInvalidException("Permission đã tồn tại.");
       }
     }
 
-    return ResponseEntity.ok().body(this.permissionService.updatePermission(p));
+    return ResponseEntity.ok().body(this.permissionServiceImpl.updatePermission(p));
   }
 
   @GetMapping("/permissions")
@@ -62,17 +62,17 @@ public class PermissionController {
   public ResponseEntity<ResultPaginationDTO> getAllPermission(
       @Filter Specification<Permission> spec,
       Pageable pageable) {
-    return ResponseEntity.ok().body(this.permissionService.getAllPermission(spec, pageable));
+    return ResponseEntity.ok().body(this.permissionServiceImpl.getAllPermission(spec, pageable));
   }
 
   @DeleteMapping("/permissions/{id}")
   @ApiMessage("delete a permission")
   public ResponseEntity<Void> delete(@PathVariable("id") long id) throws IdInvalidException {
     // check exist by id
-    if (this.permissionService.getPermissionById(id) == null) {
+    if (this.permissionServiceImpl.getPermissionById(id) == null) {
       throw new IdInvalidException("Permission với id = " + id + " không tồn tại.");
     }
-    this.permissionService.delete(id);
+    this.permissionServiceImpl.delete(id);
     return ResponseEntity.ok().body(null);
   }
 }

@@ -1,7 +1,7 @@
 package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.domain.Subscriber;
-import com.ntt.JobPool.service.SubscriberService;
+import com.ntt.JobPool.service.impl.SubscriberServiceImpl;
 import com.ntt.JobPool.utils.SecurityUtil;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
@@ -20,19 +20,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class SubscriberController {
 
   @Autowired
-  private SubscriberService subscriberService;
+  private SubscriberServiceImpl subscriberServiceImpl;
 
   @PostMapping("/subscribers")
   @ApiMessage("Create a subscriber")
   public ResponseEntity<Subscriber> create(@Valid @RequestBody Subscriber sub)
       throws IdInvalidException {
     // check email
-    boolean isExist = this.subscriberService.isExistsByEmail(sub.getEmail());
+    boolean isExist = this.subscriberServiceImpl.isExistsByEmail(sub.getEmail());
     if (isExist == true) {
       throw new IdInvalidException("Email " + sub.getEmail() + " đã tồn tại");
     }
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(this.subscriberService.create(sub));
+    return ResponseEntity.status(HttpStatus.CREATED).body(this.subscriberServiceImpl.create(sub));
   }
 
   @PutMapping("/subscribers")
@@ -40,11 +40,11 @@ public class SubscriberController {
   public ResponseEntity<Subscriber> update(@RequestBody Subscriber subsRequest)
       throws IdInvalidException {
     // check id
-    Subscriber subsDB = this.subscriberService.getById(subsRequest.getId());
+    Subscriber subsDB = this.subscriberServiceImpl.getById(subsRequest.getId());
     if (subsDB == null) {
       throw new IdInvalidException("Id " + subsRequest.getId() + " không tồn tại");
     }
-    return ResponseEntity.ok().body(this.subscriberService.update(subsDB, subsRequest));
+    return ResponseEntity.ok().body(this.subscriberServiceImpl.update(subsDB, subsRequest));
   }
 
   @PostMapping("/subscribers/skills")
@@ -54,6 +54,6 @@ public class SubscriberController {
         ? SecurityUtil.getCurrentUserLogin().get()
         : "";
 
-    return ResponseEntity.ok().body(this.subscriberService.getByEmail(email));
+    return ResponseEntity.ok().body(this.subscriberServiceImpl.getByEmail(email));
   }
 }

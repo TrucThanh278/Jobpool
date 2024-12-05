@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.ntt.JobPool.domain.Company;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
-import com.ntt.JobPool.service.CompanyService;
+import com.ntt.JobPool.service.impl.CompanyServiceImpl;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
@@ -22,11 +22,11 @@ import jakarta.validation.Valid;
 public class CompanyController {
 
   @Autowired
-  private CompanyService companyService;
+  private CompanyServiceImpl companyServiceImpl;
 
   @PostMapping("/companies")
   public ResponseEntity<Company> createCompany(@RequestBody @Valid Company company) {
-    Company savedCompany = this.companyService.saveCompany(company);
+    Company savedCompany = this.companyServiceImpl.saveCompany(company);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedCompany);
   }
 
@@ -35,14 +35,14 @@ public class CompanyController {
   public ResponseEntity<ResultPaginationDTO> getAllCompanies(@Filter Specification spec,
       Pageable pageable) {
     return ResponseEntity.status(HttpStatus.OK)
-        .body(this.companyService.getAllCompanies(spec, pageable));
+        .body(this.companyServiceImpl.getAllCompanies(spec, pageable));
   }
 
   @GetMapping("/companies/{id}")
   @ApiMessage("get companies by id")
   public ResponseEntity<Company> getCompanyById(@PathVariable("id") long id)
       throws IdInvalidException {
-    Optional<Company> c = this.companyService.findCompanyById(id);
+    Optional<Company> c = this.companyServiceImpl.findCompanyById(id);
     if (c.isEmpty()) {
       throw new IdInvalidException("Cong ty voi id = " + id + " khong ton tai !");
     }
@@ -51,12 +51,12 @@ public class CompanyController {
 
   @PutMapping("/companies")
   public ResponseEntity<Company> updateCompany(@RequestBody Company company) {
-    return ResponseEntity.status(HttpStatus.OK).body(this.companyService.updateCompany(company));
+    return ResponseEntity.status(HttpStatus.OK).body(this.companyServiceImpl.updateCompany(company));
   }
 
   @DeleteMapping("/companies/{id}")
   public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
-    this.companyService.deleteCompany(id);
+    this.companyServiceImpl.deleteCompany(id);
     return ResponseEntity.ok().body(null);
   }
 

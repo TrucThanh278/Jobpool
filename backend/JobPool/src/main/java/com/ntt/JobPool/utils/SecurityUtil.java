@@ -121,6 +121,7 @@ public class SecurityUtil {
      * @return the login of the current user.
      */
 
+    // Get user logged in
     public static Optional<String> getCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(extractPrincipal(securityContext.getAuthentication()));

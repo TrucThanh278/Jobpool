@@ -2,7 +2,7 @@ package com.ntt.JobPool.controller;
 
 import com.ntt.JobPool.domain.Role;
 import com.ntt.JobPool.domain.response.ResultPaginationDTO;
-import com.ntt.JobPool.service.RoleService;
+import com.ntt.JobPool.service.impl.RoleServiceImpl;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
@@ -26,39 +26,39 @@ import org.springframework.web.bind.annotation.RestController;
 public class RoleController {
 
   @Autowired
-  private RoleService roleService;
+  private RoleServiceImpl roleServiceImpl;
 
   @PostMapping("/roles")
   @ApiMessage("Create new role")
   public ResponseEntity<Role> createRole(@Valid @RequestBody Role role) throws IdInvalidException {
-    if (this.roleService.existByName(role.getName())) {
+    if (this.roleServiceImpl.existByName(role.getName())) {
       throw new IdInvalidException("Role voi name " + role.getName() + " da ton tai !");
     }
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(this.roleService.save(role));
+    return ResponseEntity.status(HttpStatus.CREATED).body(this.roleServiceImpl.save(role));
   }
 
   @PutMapping("/roles")
   @ApiMessage("Update a role")
   public ResponseEntity<Role> updateRole(@Valid @RequestBody Role role) throws IdInvalidException {
-    if (this.roleService.getRoleById(role.getId()) == null) {
+    if (this.roleServiceImpl.getRoleById(role.getId()) == null) {
       throw new IdInvalidException("Role voi id = " + role.getId() + " khong ton tai !");
     }
 
-    return ResponseEntity.status(HttpStatus.OK).body(this.roleService.update(role));
+    return ResponseEntity.status(HttpStatus.OK).body(this.roleServiceImpl.update(role));
   }
 
   @GetMapping("/roles")
   @ApiMessage("Get all roles")
   ResponseEntity<ResultPaginationDTO> getAllRoles(@Filter Specification<Role> spec,
       Pageable pageable) {
-    return ResponseEntity.ok().body(this.roleService.getAllRoles(spec, pageable));
+    return ResponseEntity.ok().body(this.roleServiceImpl.getAllRoles(spec, pageable));
   }
 
   @GetMapping("/roles/{id}")
   @ApiMessage("Get role by id")
   public ResponseEntity<Role> getRoleById(@PathVariable("id") long id) throws IdInvalidException {
-    Role role = this.roleService.getRoleById(id);
+    Role role = this.roleServiceImpl.getRoleById(id);
     if (role == null) {
       throw new IdInvalidException("Resume với id = " + id + " không tồn tại !");
     }
@@ -70,10 +70,10 @@ public class RoleController {
   @ApiMessage("Delete a role")
   public ResponseEntity<Void> delete(@PathVariable("id") long id) throws IdInvalidException {
     // check id
-    if (this.roleService.getRoleById(id) == null) {
+    if (this.roleServiceImpl.getRoleById(id) == null) {
       throw new IdInvalidException("Role với id = " + id + " không tồn tại");
     }
-    this.roleService.delete(id);
+    this.roleServiceImpl.delete(id);
     return ResponseEntity.ok().body(null);
   }
 

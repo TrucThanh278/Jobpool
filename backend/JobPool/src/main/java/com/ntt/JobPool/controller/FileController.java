@@ -1,8 +1,7 @@
 package com.ntt.JobPool.controller;
 
-import com.ntt.JobPool.domain.response.RestResponse;
 import com.ntt.JobPool.domain.response.file.ResUploadFileDTO;
-import com.ntt.JobPool.service.FileService;
+import com.ntt.JobPool.service.impl.FileServiceImpl;
 import com.ntt.JobPool.utils.annotations.ApiMessage;
 import com.ntt.JobPool.utils.exception.StorageException;
 import java.io.FileNotFoundException;
@@ -33,7 +32,7 @@ public class FileController {
   private String baseURI;
 
   @Autowired
-  private FileService fileService;
+  private FileServiceImpl fileServiceImpl;
 
   @PostMapping("/files")
   @ApiMessage("Upload single file")
@@ -56,9 +55,9 @@ public class FileController {
           "Invalid file, only allow file with extension " + allowedExtensions.toString());
     }
 
-    this.fileService.createDirectory(baseURI + folder);
+    this.fileServiceImpl.createDirectory(baseURI + folder);
 
-    String uploadfileName = this.fileService.store(file, folder);
+    String uploadfileName = this.fileServiceImpl.store(file, folder);
 
     ResUploadFileDTO res = new ResUploadFileDTO();
     res.setFileName(uploadfileName);
@@ -78,14 +77,14 @@ public class FileController {
     }
 
     // check file exist and not a directory
-    long fileLength = this.fileService.getFileLength(fileName, folder);
+    long fileLength = this.fileServiceImpl.getFileLength(fileName, folder);
 
     if (fileLength == 0) {
       throw new StorageException("File with name = " + fileName + " not found !");
     }
 
     //down file
-    InputStreamResource resource = this.fileService.getResource(fileName, folder);
+    InputStreamResource resource = this.fileServiceImpl.getResource(fileName, folder);
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
